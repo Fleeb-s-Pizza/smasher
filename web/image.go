@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/nfnt/resize"
 	"image"
 	"image/gif"
@@ -122,6 +123,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			})
 
 			http.Error(w, string(errorJson), http.StatusInternalServerError)
+			fmt.Println(hashedUrl)
 			panic(err)
 			return
 		}
