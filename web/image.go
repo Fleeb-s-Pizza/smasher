@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/nfnt/resize"
 	"image"
 	"image/gif"
@@ -31,6 +32,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			Message: "Missing or empty url parameter",
 			Status:  http.StatusBadRequest,
 		})
+		fmt.Println(errorJson)
 		http.Error(w, string(errorJson), http.StatusBadRequest)
 		return
 	}
