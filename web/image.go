@@ -32,7 +32,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			Message: "Missing or empty url parameter",
 			Status:  http.StatusBadRequest,
 		})
-		fmt.Println(errorJson)
+		fmt.Println(string(errorJson))
 		http.Error(w, string(errorJson), http.StatusBadRequest)
 		return
 	}
