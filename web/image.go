@@ -99,7 +99,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 
 	// check if file exist
 	if !CheckIfFileExist("image", domain, hashedUrl) {
-		err := DownloadFile("image", domain, hashedUrl, url)
+		err, filePath := DownloadFile("image", domain, hashedUrl, url)
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error downloading file",
@@ -110,6 +110,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 			return
 		}
+		hashedUrl = hashedUrl + filepath.Ext(filePath)
 	}
 
 	if width != 0 && height != 0 {
