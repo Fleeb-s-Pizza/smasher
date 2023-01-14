@@ -133,6 +133,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 func resizeImage(srcImg, destImg string, width, height uint) error {
 	file, err := os.Open(srcImg)
 	if err != nil {
+		panic(err)
 		return err
 	}
 	defer file.Close()
@@ -140,6 +141,7 @@ func resizeImage(srcImg, destImg string, width, height uint) error {
 	// Decode the image
 	img, _, err := image.Decode(file)
 	if err != nil {
+		panic(err)
 		return err
 	}
 
@@ -149,6 +151,7 @@ func resizeImage(srcImg, destImg string, width, height uint) error {
 	// Create the destination file
 	dest, err := os.Create(destImg)
 	if err != nil {
+		panic(err)
 		return err
 	}
 	defer dest.Close()
@@ -163,7 +166,9 @@ func resizeImage(srcImg, destImg string, width, height uint) error {
 		err = gif.Encode(dest, img, nil)
 	}
 	if err != nil {
+		panic(err)
 		return err
 	}
+
 	return nil
 }
