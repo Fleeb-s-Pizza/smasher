@@ -54,55 +54,28 @@ func CheckIfFileExist(endpoint string, domain string, hash string) bool {
 	return true
 }
 
-func DownloadFile(endpoint string, domain string, hash string, url string) (error, string) {
+func DownloadFile(endpoint string, domain string, hash string, url string) error {
 	filepath := "./cache/" + endpoint + "/" + domain + "/" + hash
-
-	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Error downloading file:", err)
-		return err, ""
-	}
-
-	ext := GetFileExtension(resp.Body)
-	filepath = filepath + "." + ext
 
 	out, err := os.Create(filepath)
 	if err != nil {
 		fmt.Println("Error creating file:", err)
-		return err, ""
+		return err
+	}
+
+	defer out.Close()
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error downloading file:", err)
+		return err
 	}
 
 	defer resp.Body.Close()
-	defer out.Close()
 	_, err = io.Copy(out, resp.Body)
 	if err != nil {
 		fmt.Println("Error writing file:", err)
-		return err, ""
+		return err
 	}
 
-	return nil, filepath
-}
-
-func GetFileExtension(read io.ReadCloser) string {
-	fileBytes := make([]byte, 512)
-	fileType := http.DetectContentType(fileBytes)
-
-	switch fileType {
-	case "image/jpeg":
-		return "jpg"
-	case "image/gif":
-		return "gif"
-	case "image/png":
-		return "png"
-	case "image/bmp":
-		return "bmp"
-	case "image/tiff":
-		return "tiff"
-	case "image/webp":
-		return "webp"
-	case "application/pdf":
-		return "pdf"
-	default:
-		return "unknown"
-	}
+	return nil
 }
