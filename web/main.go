@@ -22,13 +22,12 @@ func main() {
 		go HandleImageRequest(writer, request)
 	})
 
+	fmt.Println("Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT"))
+
 	err = http.ListenAndServe(os.Getenv("SERVER_HOST")+":"+os.Getenv("SERVER_PORT"), nil)
 	if err != nil {
 		fmt.Println("Error starting server: ", err)
 		panic(err)
 		return
 	}
-
-	fmt.Println("Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT"))
-	select {}
 }
