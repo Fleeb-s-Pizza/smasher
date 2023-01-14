@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/nfnt/resize"
 	"image"
 	"image/gif"
@@ -13,19 +14,34 @@ import (
 )
 
 func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+
 	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		errorJson, _ := json.Marshal(Error{
+			Message: "Method not allowed",
+			Status:  http.StatusMethodNotAllowed,
+		})
+		http.Error(w, string(errorJson), http.StatusMethodNotAllowed)
 		return
 	}
 
 	if r.URL.Query().Has("url") || r.URL.Query().Get("url") == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		errorJson, _ := json.Marshal(Error{
+			Message: "Missing or empty url parameter",
+			Status:  http.StatusBadRequest,
+		})
+		http.Error(w, string(errorJson), http.StatusBadRequest)
 		return
 	}
 
 	url := r.URL.Query().Get("url")
 	if !CheckIfStringUrl(url) {
-		w.WriteHeader(http.StatusBadRequest)
+		errorJson, _ := json.Marshal(Error{
+			Message: "Invalid url parameter",
+			Status:  http.StatusBadRequest,
+		})
+		http.Error(w, string(errorJson), http.StatusBadRequest)
 		return
 	}
 
@@ -35,7 +51,11 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Has("width") {
 		width, err = strconv.Atoi(r.URL.Query().Get("width"))
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			errorJson, _ := json.Marshal(Error{
+				Message: "Invalid width parameter",
+				Status:  http.StatusBadRequest,
+			})
+			http.Error(w, string(errorJson), http.StatusBadRequest)
 			return
 		}
 	}
@@ -43,13 +63,21 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Has("height") {
 		height, err = strconv.Atoi(r.URL.Query().Get("height"))
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			errorJson, _ := json.Marshal(Error{
+				Message: "Invalid height parameter",
+				Status:  http.StatusBadRequest,
+			})
+			http.Error(w, string(errorJson), http.StatusBadRequest)
 			return
 		}
 	}
 
 	if width > 2048 || height > 2048 {
-		w.WriteHeader(http.StatusBadRequest)
+		errorJson, _ := json.Marshal(Error{
+			Message: "Maximum width or height is 2048",
+			Status:  http.StatusBadRequest,
+		})
+		http.Error(w, string(errorJson), http.StatusBadRequest)
 		return
 	}
 
@@ -60,7 +88,11 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	// create folder
 	err = CreateFolder("image", domain)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		errorJson, _ := json.Marshal(Error{
+			Message: "Error creating folder",
+			Status:  http.StatusInternalServerError,
+		})
+		http.Error(w, string(errorJson), http.StatusInternalServerError)
 		return
 	}
 
@@ -68,7 +100,12 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	if !CheckIfFileExist("image", domain, hashedUrl) {
 		err := DownloadFile("image", domain, hashedUrl, url)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			errorJson, _ := json.Marshal(Error{
+				Message: "Error downloading file",
+				Status:  http.StatusInternalServerError,
+			})
+
+			http.Error(w, string(errorJson), http.StatusInternalServerError)
 			return
 		}
 	}
@@ -76,7 +113,12 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	if width != 0 && height != 0 {
 		err := resizeImage("./cache/image/"+domain+"/"+hashedUrl, "./cache/image/"+domain+"/"+hashedUrl, uint(width), uint(height))
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			errorJson, _ := json.Marshal(Error{
+				Message: "Error resizing image",
+				Status:  http.StatusInternalServerError,
+			})
+
+			http.Error(w, string(errorJson), http.StatusInternalServerError)
 			return
 		}
 	}
