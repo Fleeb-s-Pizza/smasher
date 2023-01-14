@@ -79,3 +79,34 @@ func DownloadFile(endpoint string, domain string, hash string, url string) error
 
 	return nil
 }
+
+func GetFileExtension(path string) string {
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+	fileBytes := make([]byte, 512)
+	file.Read(fileBytes)
+	fileType := http.DetectContentType(fileBytes)
+
+	switch fileType {
+	case "image/jpeg":
+		return "jpg"
+	case "image/gif":
+		return "gif"
+	case "image/png":
+		return "png"
+	case "image/bmp":
+		return "bmp"
+	case "image/tiff":
+		return "tiff"
+	case "image/webp":
+		return "webp"
+	case "application/pdf":
+		return "pdf"
+	default:
+		return "unknown"
+	}
+}

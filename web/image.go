@@ -10,13 +10,12 @@ import (
 	"image/png"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 )
 
 func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
-	//w.Header().Set("Access-Control-Allow-Origin", "*")
-	//w.Header().Set("Access-Control-Allow-Methods", "GET")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
 
 	if r.Method != http.MethodGet {
 		errorJson, _ := json.Marshal(Error{
@@ -154,14 +153,13 @@ func resizeImage(srcImg, destImg string, width, height uint) error {
 	}
 	defer dest.Close()
 
-	// Save the resized image
-	ext := filepath.Ext(destImg)
+	ext := GetFileExtension(srcImg)
 	switch ext {
-	case ".jpg", ".jpeg":
+	case "jpg", "jpeg":
 		err = jpeg.Encode(dest, img, nil)
-	case ".png":
+	case "png":
 		err = png.Encode(dest, img)
-	case ".gif":
+	case "gif":
 		err = gif.Encode(dest, img, nil)
 	}
 	if err != nil {
