@@ -93,6 +93,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			Status:  http.StatusInternalServerError,
 		})
 		http.Error(w, string(errorJson), http.StatusInternalServerError)
+		panic(err)
 		return
 	}
 
@@ -106,6 +107,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			})
 
 			http.Error(w, string(errorJson), http.StatusInternalServerError)
+			panic(err)
 			return
 		}
 	}
@@ -119,6 +121,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			})
 
 			http.Error(w, string(errorJson), http.StatusInternalServerError)
+			panic(err)
 			return
 		}
 	}
