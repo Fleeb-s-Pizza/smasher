@@ -84,6 +84,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 
 	// url to md5
 	hashedUrl := HashUrl(url) + "-" + strconv.Itoa(width) + "-" + strconv.Itoa(height)
+	zeroHashedUrl := HashUrl(url) + "-0-0"
 	domain := ExtractDomainFromUrl(url)
 
 	// create folder
@@ -99,8 +100,8 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if file exist
-	if !CheckIfFileExist("image", domain, hashedUrl) {
-		err := DownloadFile("image", domain, hashedUrl, url)
+	if !CheckIfFileExist("image", domain, zeroHashedUrl) {
+		err := DownloadFile("image", domain, zeroHashedUrl, url)
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error downloading file",
@@ -123,7 +124,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err := resizeImage(GetFilePath("image", domain, HashUrl(url)+"-0-0"), GetFilePath("image", domain, hashedUrl), uint(width), uint(height))
+		err := resizeImage(GetFilePath("image", domain, zeroHashedUrl), GetFilePath("image", domain, hashedUrl), uint(width), uint(height))
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error resizing image",
