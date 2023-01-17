@@ -114,7 +114,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if width != 0 && height != 0 {
-		err := resizeImage(GetFilePath("image", domain, hashedUrl), GetFilePath("image", domain, hashedUrl), uint(width), uint(height))
+		err := resizeImage(GetFilePath("image", domain, HashUrl(url)+"-0-0"), GetFilePath("image", domain, hashedUrl), uint(width), uint(height))
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error resizing image",
