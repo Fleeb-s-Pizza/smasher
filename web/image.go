@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
@@ -128,6 +129,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.ServeFile(w, r, "./cache/image/"+domain+"/"+hashedUrl)
+	err = os.Chtimes("./cache/image/"+domain+"/"+hashedUrl, time.Now(), time.Now())
 }
 
 func resizeImage(srcImg, destImg string, width, height uint) error {
