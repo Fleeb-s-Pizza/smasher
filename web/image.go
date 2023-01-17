@@ -114,6 +114,15 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if width != 0 && height != 0 {
+		if width < 10 || height < 10 {
+			errorJson, _ := json.Marshal(Error{
+				Message: "Minimum width or height is 10",
+				Status:  http.StatusBadRequest,
+			})
+			http.Error(w, string(errorJson), http.StatusBadRequest)
+			return
+		}
+
 		err := resizeImage(GetFilePath("image", domain, HashUrl(url)+"-0-0"), GetFilePath("image", domain, hashedUrl), uint(width), uint(height))
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
