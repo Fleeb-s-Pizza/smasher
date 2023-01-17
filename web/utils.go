@@ -46,7 +46,7 @@ func CreateFolder(endpoint string, domain string) error {
 }
 
 func CheckIfFileExist(endpoint string, domain string, hash string) bool {
-	path := "./cache/" + endpoint + "/" + domain + "/" + hash
+	path := GetFilePath(endpoint, domain, hash)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
 	}
@@ -55,7 +55,7 @@ func CheckIfFileExist(endpoint string, domain string, hash string) bool {
 }
 
 func DownloadFile(endpoint string, domain string, hash string, url string) error {
-	filepath := "./cache/" + endpoint + "/" + domain + "/" + hash
+	filepath := GetFilePath(endpoint, domain, hash)
 
 	out, err := os.Create(filepath)
 	if err != nil {
@@ -109,4 +109,8 @@ func GetFileExtension(path string) string {
 	default:
 		return "unknown"
 	}
+}
+
+func GetFilePath(endpoint string, domain string, hash string) string {
+	return "./cache/" + endpoint + "/" + domain + "/" + hash
 }

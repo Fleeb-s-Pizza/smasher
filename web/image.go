@@ -114,7 +114,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if width != 0 && height != 0 {
-		err := resizeImage("./cache/image/"+domain+"/"+hashedUrl, "./cache/image/"+domain+"/"+hashedUrl, uint(width), uint(height))
+		err := resizeImage(GetFilePath("image", domain, hashedUrl), GetFilePath("image", domain, hashedUrl), uint(width), uint(height))
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error resizing image",
@@ -128,8 +128,8 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	http.ServeFile(w, r, "./cache/image/"+domain+"/"+hashedUrl)
-	err = os.Chtimes("./cache/image/"+domain+"/"+hashedUrl, time.Now(), time.Now())
+	http.ServeFile(w, r, GetFilePath("image", domain, hashedUrl))
+	err = os.Chtimes(GetFilePath("image", domain, hashedUrl), time.Now(), time.Now())
 }
 
 func resizeImage(srcImg, destImg string, width, height uint) error {
