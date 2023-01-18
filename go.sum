@@ -1,3 +1,5 @@
+github.com/discord/lilliput v0.0.0-20220922234446-1ef1bb44bb7e h1:waSNIW5ermIo264QXREgf+6qtKh0qpoGSOoMqxgPiJM=
+github.com/discord/lilliput v0.0.0-20220922234446-1ef1bb44bb7e/go.mod h1:0euuUBAD72MAYRm2ElLaG1h0nBR+CgpfnKc/U6y/uE8=
 github.com/joho/godotenv v1.4.0 h1:3l4+N6zfMWnkbPEXKng2o2/MR5mSwTrBih4ZEkkz1lg=
 github.com/joho/godotenv v1.4.0/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
 github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
