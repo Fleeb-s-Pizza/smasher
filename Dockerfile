@@ -5,11 +5,14 @@ WORKDIR /build
 COPY . .
 
 RUN go mod download
-RUN go build -o smasher ./web
+
+RUN apk add --no-cache --upgrade bash
 
 RUN wget https://raw.githubusercontent.com/discord/lilliput/master/deps/build-deps-linux.sh -o build-liliput.sh
 RUN chmod +x build-liliput.sh
-RUN ./build-liliput.sh
+RUN sh build-liliput.sh
+
+RUN go build -o smasher ./web
 
 FROM alpine:latest
 MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
