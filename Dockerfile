@@ -4,15 +4,14 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /build
 COPY . .
 
-RUN go mod download
+RUN apk update
+RUN apk upgrade
+RUN apk add --update gcc=10.2.0-r5 g++=10.2.0-r5
 
-RUN apk add --no-cache --upgrade bash
-
-RUN wget https://raw.githubusercontent.com/discord/lilliput/master/deps/build-deps-linux.sh -o build-liliput.sh
-RUN chmod +x build-liliput.sh
-RUN sh build-liliput.sh
-
-RUN go build -o smasher ./web
+RUN go env
+ENV GOPATH /app
+RUN go get -d -v
+RUN CGO_ENABLED=1 GOOS=linux go build -o smasher ./web
 
 FROM alpine:latest
 MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
