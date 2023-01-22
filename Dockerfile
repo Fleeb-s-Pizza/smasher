@@ -4,7 +4,7 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /build
 COPY . .
 
-RUN apk add pkgconfig vips-dev
+RUN apk add pkgconfig vips-dev gcc
 
 RUN go mod download
 RUN go build -o smasher ./web
