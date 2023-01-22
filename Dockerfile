@@ -4,10 +4,10 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /build
 COPY . .
 
+RUN apk add pkg-config
+
 RUN go mod download
 RUN go build -o smasher ./web
-
-RUN apk add pkg-config
 
 FROM alpine:latest
 MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
