@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/h2non/bimg"
 	"github.com/nfnt/resize"
 	"image"
 	"image/gif"
@@ -82,9 +83,22 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	webp := false
+	if r.URL.Query().Has("webp") {
+		webp, err = strconv.ParseBool(r.URL.Query().Get("webp"))
+		if err != nil {
+			errorJson, _ := json.Marshal(Error{
+				Message: "Invalid webp parameter",
+				Status:  http.StatusBadRequest,
+			})
+			http.Error(w, string(errorJson), http.StatusBadRequest)
+			return
+		}
+	}
+
 	// url to md5
-	hashedUrl := HashUrl(url) + "-" + strconv.Itoa(width) + "-" + strconv.Itoa(height)
-	zeroHashedUrl := HashUrl(url) + "-0-0"
+	hashedUrl := HashUrl(url) + "-" + strconv.Itoa(width) + "-" + strconv.Itoa(height) + "-" + strconv.FormatBool(webp)
+	zeroHashedUrl := HashUrl(url) + "-0-0-" + strconv.FormatBool(webp)
 	domain := ExtractDomainFromUrl(url)
 
 	// create folder
@@ -138,6 +152,21 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if webp {
+		err := convertToWebp(GetFilePath("image", domain, hashedUrl), GetFilePath("image", domain, hashedUrl))
+		if err != nil {
+			errorJson, _ := json.Marshal(Error{
+				Message: "Error converting to webp",
+				Status:  http.StatusInternalServerError,
+			})
+
+			http.Error(w, string(errorJson), http.StatusInternalServerError)
+			fmt.Println(hashedUrl)
+			panic(err)
+			return
+		}
+	}
+
 	http.ServeFile(w, r, GetFilePath("image", domain, hashedUrl))
 	err = os.Chtimes(GetFilePath("image", domain, hashedUrl), time.Now(), time.Now())
 }
@@ -171,7 +200,7 @@ func resizeImage(srcImg, destImg string, width, height uint) error {
 	ext := GetFileExtension(srcImg)
 	switch ext {
 	case "jpg", "jpeg":
-		err = jpeg.Encode(dest, img, nil)
+		err = jpeg.Encode(dest, img, &jpeg.Options{Quality: 90})
 	case "png":
 		err = png.Encode(dest, img)
 	case "gif":
@@ -179,6 +208,30 @@ func resizeImage(srcImg, destImg string, width, height uint) error {
 	}
 	if err != nil {
 		panic(err)
+		return err
+	}
+
+	return nil
+}
+
+func convertToWebp(srcImg, destImg string) error {
+	buffer, err := os.ReadFile(srcImg)
+	if err != nil {
+		return err
+	}
+
+	converted, err := bimg.NewImage(buffer).Convert(bimg.WEBP)
+	if err != nil {
+		return err
+	}
+
+	processed, err := bimg.NewImage(converted).Process(bimg.Options{Quality: 95})
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(destImg, processed, 0644)
+	if err != nil {
 		return err
 	}
 
