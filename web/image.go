@@ -3,19 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/discord/lilliput"
+	"github.com/nfnt/resize"
+	"image"
+	"image/gif"
+	"image/jpeg"
+	"image/png"
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
-
-var EncodeOptions = map[string]map[int]int{
-	".jpeg": map[int]int{lilliput.JpegQuality: 85},
-	".png":  map[int]int{lilliput.PngCompression: 7},
-	".webp": map[int]int{lilliput.WebpQuality: 85},
-}
 
 func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -127,7 +124,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err := resizeImage(GetFilePath("image", domain, zeroHashedUrl), GetFilePath("image", domain, hashedUrl), width, height)
+		err := resizeImage(GetFilePath("image", domain, zeroHashedUrl), GetFilePath("image", domain, hashedUrl), uint(width), uint(height))
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error resizing image",
@@ -145,40 +142,25 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	err = os.Chtimes(GetFilePath("image", domain, hashedUrl), time.Now(), time.Now())
 }
 
-func resizeImage(srcImg, destImg string, width, height int) error {
-	inputBuf, err := os.ReadFile(srcImg)
+func resizeImage(srcImg, destImg string, width, height uint) error {
+	file, err := os.Open(srcImg)
+	if err != nil {
+		panic(err)
+		return err
+	}
+	defer file.Close()
+
+	// Decode the image
+	img, _, err := image.Decode(file)
 	if err != nil {
 		panic(err)
 		return err
 	}
 
-	decoder, err := lilliput.NewDecoder(inputBuf)
-	if err != nil {
-		panic(err)
-		return err
-	}
-	defer decoder.Close()
+	// Resize the image
+	img = resize.Resize(width, height, img, resize.Lanczos3)
 
-	ops := lilliput.NewImageOps(8192)
-	defer ops.Close()
-
-	outputType := "." + strings.ToLower(decoder.Description())
-	resizeOps := &lilliput.ImageOptions{
-		Width:                width,
-		Height:               height,
-		ResizeMethod:         lilliput.ImageOpsResize,
-		NormalizeOrientation: true,
-		EncodeOptions:        EncodeOptions[outputType],
-	}
-
-	outputImg := make([]byte, 50*1024*1024)
-
-	outputImg, err = ops.Transform(decoder, resizeOps, outputImg)
-	if err != nil {
-		panic(err)
-		return err
-	}
-
+	// Create the destination file
 	dest, err := os.Create(destImg)
 	if err != nil {
 		panic(err)
@@ -186,12 +168,15 @@ func resizeImage(srcImg, destImg string, width, height int) error {
 	}
 	defer dest.Close()
 
-	err = os.WriteFile(destImg, outputImg, 0400)
-	if err != nil {
-		fmt.Printf("error writing out resized image, %s\n", err)
-		os.Exit(1)
+	ext := GetFileExtension(srcImg)
+	switch ext {
+	case "jpg", "jpeg":
+		err = jpeg.Encode(dest, img, nil)
+	case "png":
+		err = png.Encode(dest, img)
+	case "gif":
+		err = gif.Encode(dest, img, nil)
 	}
-
 	if err != nil {
 		panic(err)
 		return err
