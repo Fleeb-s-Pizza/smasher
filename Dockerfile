@@ -4,7 +4,7 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /build
 COPY . .
 
-RUN apk add pkgconfig curl gcc bash
+RUN apk add pkgconfig curl gcc bash build-essential procps file git
 RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 RUN brew install vips
 
