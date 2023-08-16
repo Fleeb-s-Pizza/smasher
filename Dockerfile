@@ -16,6 +16,7 @@ WORKDIR /app
 
 COPY --from=builder /build/smasher .
 RUN ln -s /home/container/cache /app/cache
+RUN ln -s /home/container/ui /app/ui
 RUN ln -s /home/container/.env /app/.env
 
 USER container

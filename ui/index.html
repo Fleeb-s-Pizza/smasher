@@ -1,0 +1,86 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Smasher UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/vue@3"></script>
+</head>
+<body>
+    <h1>
+        Smasher UI
+    </h1>
+
+    <div id="app">
+        <div class="tabs">
+            <a class="tab" v-for="tab in tabs" :class="{ 'active': currentTab == tab }" @click="currentTab = tab">
+                {{ tab }}
+            </a>
+        </div>
+
+        <div class="content">
+            <div v-show="currentTab == 'Images'">
+                <form>
+                    <div>
+                        <label for="url">Image url:</label>
+                        <input v-model="images.url" type="url" id="url" name="url">
+                    </div>
+
+                    <div class="multiple">
+                        <div>
+                            <label for="width">Width:</label>
+                            <input v-model="images.width" type="number" id="width" name="width">
+                        </div>
+
+                        <div>
+                            <label for="height">Height:</label>
+                            <input v-model="images.height" type="number" id="height" name="height">
+                        </div>
+                    </div>
+
+                    <p class="op">Other options:</p>
+                    <div class="checkbox">
+                        <div class="group">
+                            <input v-model="images.webp" class="toggle toggle-switch" id="switch2" type="checkbox"/>
+                            <label class="toggle-btn" for="switch2"></label>
+                        </div>
+                        <label>Webp</label>
+                    </div>
+                </form>
+
+                <div class="info">
+                    <h2>
+                        Result:
+                    </h2>
+
+                    <p>
+                        <span class="key">URL:</span> {{getSmashedUrl(images)}}
+                    </p>
+
+                    <p>
+                        <span class="key">HTML:</span> &lt;img src="<span>{{getSmashedUrl(images)}}</span>" alt="Image"&gt;
+                    </p>
+
+                    <p>
+                        <span class="key">Markdown:</span> ![](<span>{{getSmashedUrl(images)}}</span>)
+                    </p>
+
+                    <p>
+                        <span class="key">BBCode:</span> [img]<span>{{getSmashedUrl(images)}}</span>[/img]
+                    </p>
+                </div>
+            </div>
+
+            <div v-show="currentTab == 'Documents'">
+                <p>
+                    Coming soon...
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

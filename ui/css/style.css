@@ -1,0 +1,196 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+:root {
+    --brand-color: #fff000;
+}
+
+body {
+    background: #0e0e0e;
+    padding: 2em;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    background: var(--brand-color);
+    width: fit-content;
+    padding: 0em 1em;
+}
+
+.tabs {
+    display: flex;
+    gap: 1em;
+    margin-top: 5em;
+}
+
+.tab {
+    padding: 0.5em 2em;
+    color: var(--brand-color);
+    border: 2px solid var(--brand-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.7rem;
+}
+
+.tab:hover {
+    background: var(--brand-color);
+    color: #1a1a1a;
+}
+
+.tab.active {
+    background: var(--brand-color);
+    color: #1a1a1a;
+}
+
+.content {
+    margin-top: 3em;
+    color: #fff;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    max-width: 500px;
+}
+
+.content > div > form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+    margin-top: 1em;
+}
+
+.content > div > form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+}
+
+label {
+    font-weight: 600;
+    color: var(--brand-color);
+    font-size: 0.8rem;
+}
+
+input {
+    padding: 0.5em 1em;
+    border: 2px solid var(--brand-color);
+    background: transparent;
+    color: var(--brand-color);
+    font-size: 0.8rem;
+    outline: none;
+}
+
+.content > div > form > div.multiple {
+    flex-direction: row;
+    align-items: center;
+    gap: 2em;
+}
+
+.content > div > form > div.multiple > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    width: 100%;
+}
+
+.content > div > form > div.checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+}
+
+.op {
+    margin-bottom: -1em;
+    color: var(--brand-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.group{
+}
+.toggle {
+    display: none;
+}
+.toggle, .toggle:after, .toggle:before, .toggle *, .toggle *:after, .toggle *:before, .toggle + .toggle-btn {
+    box-sizing: border-box;
+}
+.toggle::selection, .toggle:after::selection, .toggle:before::selection, .toggle *::selection, .toggle *:after::selection, .toggle *:before::selection, .toggle + .toggle-btn::selection {
+    background: none;
+}
+.toggle + .toggle-btn {
+    outline: 0;
+    display: block;
+    width: 3em;
+    height: 1.5em;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+}
+.toggle + .toggle-btn:after, .toggle + .toggle-btn:before {
+    position: relative;
+    display: block;
+    content: "";
+    width: 50%;
+    height: 100%;
+}
+.toggle + .toggle-btn:after {
+    left: 0;
+}
+.toggle + .toggle-btn:before {
+    display: none;
+}
+.toggle:checked + .toggle-btn:after {
+    left: 50%;
+}
+.toggle-switch + .toggle-btn {
+    background: #b9b9b9;
+    border-radius: 2em;
+    padding: 2px;
+    transition: all 0.4s ease;
+}
+.toggle-switch + .toggle-btn:after {
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+.group:nth-child(1) .toggle-switch:checked + .toggle-btn {
+    background: #e8db00;
+}
+
+.info {
+    margin-top: 5em;
+}
+
+.info > h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--brand-color);
+    margin-bottom: 0.5em;
+}
+
+.info > p {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin-bottom: 0.7em;
+}
+
+
+.info > p > span {
+    color: var(--brand-color);
+}
+
+.info > p > span.key {
+    font-weight: 600;
+    margin-right: 0.5em;
+}
+
+::selection {
+    background: var(--brand-color);
+    color: #1a1a1a;
+}

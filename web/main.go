@@ -18,9 +18,10 @@ func main() {
 	go RemoveOldFiles()
 
 	http.HandleFunc("/image", func(writer http.ResponseWriter, request *http.Request) {
-		println("Handling a request: ", request.URL.String())
 		HandleImageRequest(writer, request)
 	})
+
+	http.Handle("/ui", http.FileServer(http.Dir("./ui")))
 
 	fmt.Println("Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT"))
 
