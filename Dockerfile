@@ -5,7 +5,7 @@ WORKDIR /build
 COPY . .
 
 RUN apk add pkgconfig curl gcc bash
-RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 RUN brew install vips
 
 RUN go mod download
