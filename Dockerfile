@@ -5,7 +5,8 @@ WORKDIR /build
 COPY . .
 
 RUN apk add pkgconfig curl gcc bash
-RUN curl -s https://raw.githubusercontent.com/h2non/bimg/master/preinstall.sh | bash -
+RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+RUN brew install vips
 
 RUN go mod download
 RUN go build -o smasher ./web
