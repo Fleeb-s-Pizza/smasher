@@ -4,7 +4,7 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /build
 COPY . .
 
-RUN apk add pkgconfig curl gcc
+RUN apk add pkgconfig curl gcc bash
 RUN curl -s https://raw.githubusercontent.com/h2non/bimg/master/preinstall.sh | bash -
 
 RUN go mod download
