@@ -5,7 +5,7 @@ WORKDIR /build
 COPY . .
 
 RUN apk add pkgconfig curl gcc
-RUN curl -s https://raw.githubusercontent.com/h2non/bimg/master/preinstall.sh | sudo bash -
+RUN curl -s https://raw.githubusercontent.com/h2non/bimg/master/preinstall.sh | bash -
 
 RUN go mod download
 RUN go build -o smasher ./web
