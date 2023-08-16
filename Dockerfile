@@ -4,9 +4,17 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /build
 COPY . .
 
-RUN apk add pkgconfig curl gcc bash build-essential procps file git
-RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-RUN brew install vips
+RUN apk add pkgconfig curl gcc bash wget tar meson ninja unzip
+
+# Build and install vips
+RUN wget https://cdn.fleebs.gg/libs/vips.zip
+RUN unzip vips.zip
+RUN cd vips
+RUN meson setup build
+RUN cd build
+RUN ninja
+RUN ninja test
+RUN ninja install
 
 RUN go mod download
 RUN go build -o smasher ./web
