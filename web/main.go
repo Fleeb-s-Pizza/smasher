@@ -21,7 +21,9 @@ func main() {
 		HandleImageRequest(writer, request)
 	})
 
-	http.Handle("/ui", http.FileServer(http.Dir("./ui")))
+	http.HandleFunc("/ui", func(writer http.ResponseWriter, request *http.Request) {
+		HandleUIRequest(writer, request)
+	})
 
 	fmt.Println("Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT"))
 
