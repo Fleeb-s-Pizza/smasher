@@ -105,6 +105,41 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if quality < 1 || quality > 100 {
+		errorJson, _ := json.Marshal(Error{
+			Message: "Quality must be between 1 and 100",
+			Status:  http.StatusBadRequest,
+		})
+
+		http.Error(w, string(errorJson), http.StatusBadRequest)
+		return
+	}
+
+	rotate := bimg.D0
+	if r.URL.Query().Has("rotate") {
+		rotateAngle, err := strconv.Atoi(r.URL.Query().Get("rotate"))
+		if err != nil {
+			errorJson, _ := json.Marshal(Error{
+				Message: "Invalid rotate parameter",
+				Status:  http.StatusBadRequest,
+			})
+			http.Error(w, string(errorJson), http.StatusBadRequest)
+			return
+		}
+
+		supportedAngles := []int{45, 90, 135, 180, 235, 270, 315}
+		if !utils.Contains(supportedAngles, rotateAngle) {
+			errorJson, _ := json.Marshal(Error{
+				Message: fmt.Sprintf("Rotate angle must be one of %v", supportedAngles),
+				Status:  http.StatusBadRequest,
+			})
+			http.Error(w, string(errorJson), http.StatusBadRequest)
+			return
+		}
+
+		rotate = bimg.Angle(rotateAngle)
+	}
+
 	// url to md5
 	hashedUrl := utils.HashUrl(url) + "-" + strconv.Itoa(width) + "-" + strconv.Itoa(height) + "-" + strconv.FormatBool(webp) + "-" + strconv.Itoa(quality)
 	zeroHashedUrl := utils.HashUrl(url) + "-0-0-" + strconv.FormatBool(webp) + "-" + strconv.Itoa(quality)
@@ -159,6 +194,23 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error resizing image",
+				Status:  http.StatusInternalServerError,
+			})
+
+			http.Error(w, string(errorJson), http.StatusInternalServerError)
+			fmt.Println(hashedUrl)
+			panic(err)
+			return
+		}
+
+		img = bimg.NewImage(buffer)
+	}
+
+	if rotate != 0 {
+		buffer, err := img.Rotate(rotate)
+		if err != nil {
+			errorJson, _ := json.Marshal(Error{
+				Message: "Error rotating image",
 				Status:  http.StatusInternalServerError,
 			})
 
