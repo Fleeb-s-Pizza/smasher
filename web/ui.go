@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func HandleUIRequest(w http.ResponseWriter, r *http.Request) {
+func HandleUIRequest(w http.ResponseWriter, r *http.Request, path string) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 
@@ -18,17 +18,17 @@ func HandleUIRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.URL.Path != "/ui" {
+	if path != "/ui" {
 		http.ServeFile(w, r, "./ui/index.html")
 		return
 	}
 
-	if r.URL.Path == "/js/app.js" {
+	if path == "/js/app.js" {
 		http.ServeFile(w, r, "./ui/js/app.js")
 		return
 	}
 
-	if r.URL.Path == "/css/style.css" {
+	if path == "/css/style.css" {
 		http.ServeFile(w, r, "./ui/css/style.css")
 		return
 	}

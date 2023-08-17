@@ -23,15 +23,15 @@ func main() {
 
 	// UI Section
 	http.HandleFunc("/ui", func(writer http.ResponseWriter, request *http.Request) {
-		HandleUIRequest(writer, request)
+		HandleUIRequest(writer, request, "/ui")
 	})
 
 	http.HandleFunc("/css/style.css", func(writer http.ResponseWriter, request *http.Request) {
-		HandleUIRequest(writer, request)
+		HandleUIRequest(writer, request, "/css/style.css")
 	})
 
 	http.HandleFunc("/js/app.js", func(writer http.ResponseWriter, request *http.Request) {
-		HandleUIRequest(writer, request)
+		HandleUIRequest(writer, request, "/js/app.js")
 	})
 
 	fmt.Println("Server started at " + os.Getenv("SERVER_HOST") + ":" + os.Getenv("SERVER_PORT"))
