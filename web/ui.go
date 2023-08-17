@@ -18,7 +18,7 @@ func HandleUIRequest(w http.ResponseWriter, r *http.Request, path string) {
 		return
 	}
 
-	if path != "/ui" {
+	if path == "/ui" {
 		http.ServeFile(w, r, "./ui/index.html")
 		return
 	}
