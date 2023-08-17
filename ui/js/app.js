@@ -6,6 +6,7 @@ const app = createApp({
             tabs: [
                 'Images',
                 'Documents',
+                'Info'
             ],
             currentTab: 'Images',
             images: {
@@ -13,14 +14,22 @@ const app = createApp({
                 url: '',
                 width: 0,
                 height: 0,
-            }
+            },
+            info: null
         }
     },
     methods: {
         getSmashedUrl: function(images) {
-            console.log(encodeURI(images.url));
             return "https://smasher.fleebs.gg/image?url="+ encodeURI(images.url) + (images.width > 0 ? '&width=' + images.width : '') + (images.height > 0 ? '&height=' + images.height : '') + (images.webp ? '&webp=true' : '');
         }
+    },
+    mounted() {
+        axios.get('https://smasher.fleebs.gg/info')
+            .then((response) => {
+                console.log(response.data);
+                this.info = response.data;
+                console.log(this.info);
+            })
     }
 });
 

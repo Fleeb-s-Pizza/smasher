@@ -6,6 +6,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/vue@3"></script>
 </head>
 <body>
@@ -77,6 +78,40 @@
                 <p>
                     Coming soon...
                 </p>
+            </div>
+
+            <div v-show="currentTab == 'Info'">
+                <div class="info" style="margin-top: 0">
+                    <p v-show="info == null">Loading...</p>
+
+                    <p v-show="info != null">
+                        <span class="key">Name:</span> {{info?.name}}
+                    </p>
+
+                    <p v-show="info != null">
+                        <span class="key">Author:</span> {{info?.author}}
+                    </p>
+
+                    <p v-show="info != null">
+                        <span class="key">Build:</span> {{info?.build?.build}}
+                    </p>
+
+                    <p v-show="info != null">
+                        <span class="key">Commit:</span> {{info?.build?.commit}}
+                    </p>
+
+                    <p v-show="info != null">
+                        <span class="key">Branch:</span> {{info?.build?.branch}}
+                    </p>
+
+                    <p v-show="info != null">
+                        <span class="key">Environment:</span> {{info?.build?.environment}}
+                    </p>
+
+                    <p v-show="info != null">
+                        <span class="key">URL:</span> {{info?.build?.url}}
+                    </p>
+                </div>
             </div>
         </div>
     </div>
