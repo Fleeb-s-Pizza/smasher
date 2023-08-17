@@ -18,5 +18,25 @@ func HandleUIRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, "./ui/index.html")
+	if r.URL.Path != "/ui" {
+		http.ServeFile(w, r, "./ui/index.html")
+		return
+	}
+
+	if r.URL.Path == "/js/app.js" {
+		http.ServeFile(w, r, "./ui/js/app.js")
+		return
+	}
+
+	if r.URL.Path == "/css/style.css" {
+		http.ServeFile(w, r, "./ui/css/style.css")
+		return
+	}
+
+	errorJson, _ := json.Marshal(Error{
+		Message: "Not found",
+		Status:  http.StatusNotFound,
+	})
+
+	http.Error(w, string(errorJson), http.StatusNotFound)
 }

@@ -21,7 +21,16 @@ func main() {
 		HandleImageRequest(writer, request)
 	})
 
+	// UI Section
 	http.HandleFunc("/ui", func(writer http.ResponseWriter, request *http.Request) {
+		HandleUIRequest(writer, request)
+	})
+
+	http.HandleFunc("/css/style.css", func(writer http.ResponseWriter, request *http.Request) {
+		HandleUIRequest(writer, request)
+	})
+
+	http.HandleFunc("/js/app.js", func(writer http.ResponseWriter, request *http.Request) {
 		HandleUIRequest(writer, request)
 	})
 
