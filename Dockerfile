@@ -20,6 +20,7 @@ RUN go mod download
 
 COPY --from=builder /build/smasher .
 COPY --from=builder /build/ui ./ui
+COPY --from=builder /build/build.json ./build.json
 
 RUN ln -s /home/container/cache /app/cache
 RUN ln -s /home/container/.env /app/.env
