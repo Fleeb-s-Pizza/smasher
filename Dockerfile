@@ -4,17 +4,7 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /build
 COPY . .
 
-RUN apk add pkgconfig curl gcc bash wget tar meson ninja unzip
-
-# Build and install vips
-RUN wget https://cdn.fleebs.gg/libs/vips.zip
-RUN unzip vips.zip
-RUN cd vips
-RUN meson setup build
-RUN cd build
-RUN ninja
-RUN ninja test
-RUN ninja install
+RUN apk add pkgconfig curl gcc vips-dev libc-dev
 
 RUN go mod download
 RUN go build -o smasher ./web
@@ -25,7 +15,6 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /app
 
 COPY --from=builder /build/smasher .
-RUN apk add webp
 RUN ln -s /home/container/cache /app/cache
 RUN ln -s /home/container/ui /app/ui
 RUN ln -s /home/container/.env /app/.env
