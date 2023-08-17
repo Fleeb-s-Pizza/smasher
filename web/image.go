@@ -4,11 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/h2non/bimg"
-	"github.com/nfnt/resize"
-	"image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
 	"net/http"
 	"os"
 	"strconv"
@@ -83,6 +78,15 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if width < 1 || height < 1 {
+		errorJson, _ := json.Marshal(Error{
+			Message: "Minimum width or height is 1",
+			Status:  http.StatusBadRequest,
+		})
+		http.Error(w, string(errorJson), http.StatusBadRequest)
+		return
+	}
+
 	webp := false
 	if r.URL.Query().Has("webp") {
 		webp, err = strconv.ParseBool(r.URL.Query().Get("webp"))
@@ -128,17 +132,16 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if width != 0 && height != 0 {
-		if width < 10 || height < 10 {
-			errorJson, _ := json.Marshal(Error{
-				Message: "Minimum width or height is 10",
-				Status:  http.StatusBadRequest,
-			})
-			http.Error(w, string(errorJson), http.StatusBadRequest)
-			return
-		}
+	buffer, err := os.ReadFile(GetFilePath("image", domain, hashedUrl))
+	if err != nil {
+		panic(err)
+		return
+	}
 
-		err := resizeImage(GetFilePath("image", domain, zeroHashedUrl), GetFilePath("image", domain, hashedUrl), uint(width), uint(height))
+	img := bimg.NewImage(buffer)
+
+	if width != 0 && height != 0 {
+		buffer, err := img.Resize(width, height)
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error resizing image",
@@ -150,10 +153,12 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 			return
 		}
+
+		img = bimg.NewImage(buffer)
 	}
 
 	if webp {
-		err := convertToWebp(GetFilePath("image", domain, hashedUrl), GetFilePath("image", domain, hashedUrl))
+		imgBuffer, err := img.Convert(bimg.WEBP)
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error converting to webp",
@@ -165,75 +170,22 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 			return
 		}
+
+		img = bimg.NewImage(imgBuffer)
+	}
+
+	processed, err := img.Process(bimg.Options{Quality: 100})
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	err = os.WriteFile(GetFilePath("image", domain, hashedUrl), processed, 0644)
+	if err != nil {
+		panic(err)
+		return
 	}
 
 	http.ServeFile(w, r, GetFilePath("image", domain, hashedUrl))
 	err = os.Chtimes(GetFilePath("image", domain, hashedUrl), time.Now(), time.Now())
-}
-
-func resizeImage(srcImg, destImg string, width, height uint) error {
-	file, err := os.Open(srcImg)
-	if err != nil {
-		panic(err)
-		return err
-	}
-	defer file.Close()
-
-	// Decode the image
-	img, _, err := image.Decode(file)
-	if err != nil {
-		panic(err)
-		return err
-	}
-
-	// Resize the image
-	img = resize.Resize(width, height, img, resize.Lanczos3)
-
-	// Create the destination file
-	dest, err := os.Create(destImg)
-	if err != nil {
-		panic(err)
-		return err
-	}
-	defer dest.Close()
-
-	ext := GetFileExtension(srcImg)
-	switch ext {
-	case "jpg", "jpeg":
-		err = jpeg.Encode(dest, img, &jpeg.Options{Quality: 90})
-	case "png":
-		err = png.Encode(dest, img)
-	case "gif":
-		err = gif.Encode(dest, img, nil)
-	}
-	if err != nil {
-		panic(err)
-		return err
-	}
-
-	return nil
-}
-
-func convertToWebp(srcImg, destImg string) error {
-	buffer, err := os.ReadFile(srcImg)
-	if err != nil {
-		return err
-	}
-
-	converted, err := bimg.NewImage(buffer).Convert(bimg.WEBP)
-	if err != nil {
-		return err
-	}
-
-	processed, err := bimg.NewImage(converted).Process(bimg.Options{Quality: 95})
-	if err != nil {
-		return err
-	}
-
-	err = os.WriteFile(destImg, processed, 0644)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
