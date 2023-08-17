@@ -78,15 +78,6 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if width < 1 || height < 1 {
-		errorJson, _ := json.Marshal(Error{
-			Message: "Minimum width or height is 1",
-			Status:  http.StatusBadRequest,
-		})
-		http.Error(w, string(errorJson), http.StatusBadRequest)
-		return
-	}
-
 	webp := false
 	if r.URL.Query().Has("webp") {
 		webp, err = strconv.ParseBool(r.URL.Query().Get("webp"))
@@ -100,9 +91,22 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	quality := 100
+	if r.URL.Query().Has("quality") {
+		quality, err = strconv.Atoi(r.URL.Query().Get("quality"))
+		if err != nil {
+			errorJson, _ := json.Marshal(Error{
+				Message: "Invalid quality parameter",
+				Status:  http.StatusBadRequest,
+			})
+			http.Error(w, string(errorJson), http.StatusBadRequest)
+			return
+		}
+	}
+
 	// url to md5
-	hashedUrl := HashUrl(url) + "-" + strconv.Itoa(width) + "-" + strconv.Itoa(height) + "-" + strconv.FormatBool(webp)
-	zeroHashedUrl := HashUrl(url) + "-0-0-" + strconv.FormatBool(webp)
+	hashedUrl := HashUrl(url) + "-" + strconv.Itoa(width) + "-" + strconv.Itoa(height) + "-" + strconv.FormatBool(webp) + "-" + strconv.Itoa(quality)
+	zeroHashedUrl := HashUrl(url) + "-0-0-" + strconv.FormatBool(webp) + "-" + strconv.Itoa(quality)
 	domain := ExtractDomainFromUrl(url)
 
 	// create folder
@@ -141,6 +145,15 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	img := bimg.NewImage(buffer)
 
 	if width != 0 && height != 0 {
+		if width < 1 || height < 1 {
+			errorJson, _ := json.Marshal(Error{
+				Message: "Minimum width or height is 1",
+				Status:  http.StatusBadRequest,
+			})
+			http.Error(w, string(errorJson), http.StatusBadRequest)
+			return
+		}
+
 		buffer, err := img.Resize(width, height)
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
@@ -174,7 +187,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		img = bimg.NewImage(imgBuffer)
 	}
 
-	processed, err := img.Process(bimg.Options{Quality: 100})
+	processed, err := img.Process(bimg.Options{Quality: quality})
 	if err != nil {
 		panic(err)
 		return
