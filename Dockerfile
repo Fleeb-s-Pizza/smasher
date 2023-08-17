@@ -4,7 +4,7 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /build
 COPY . .
 
-RUN apk add pkgconfig curl gcc vips-dev libc-dev
+RUN apk add pkgconfig curl gcc vips-dev libc-dev libmagic
 
 RUN go mod download
 RUN go build -o smasher ./web
@@ -14,7 +14,7 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 
 WORKDIR /app
 
-RUN apk add pkgconfig curl gcc vips-dev libc-dev
+RUN apk add pkgconfig curl gcc vips-dev libc-dev libmagic
 COPY --from=builder /build/go.mod .
 RUN go mod download
 
