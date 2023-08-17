@@ -24,7 +24,7 @@ const app = createApp({
         }
     },
     mounted() {
-        axios.get('https://smasher.fleebs.gg/info')
+        axios.get('/info')
             .then((response) => {
                 console.log(response.data);
                 this.info = response.data;
