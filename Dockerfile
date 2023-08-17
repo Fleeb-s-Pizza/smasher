@@ -12,7 +12,7 @@ RUN apk add pkgconfig curl gcc vips-dev libc-dev
 RUN go mod download
 RUN go build -o smasher ./web
 
-COPY /build/smasher .
+RUN mv /build/smasher /app/smasher
 RUN ln -s /home/container/cache /app/cache
 RUN ln -s /home/container/ui /app/ui
 RUN ln -s /home/container/.env /app/.env
