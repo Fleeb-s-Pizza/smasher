@@ -1,7 +1,9 @@
-FROM golang:1.19-alpine AS builder
+FROM golang:1.19-alpine
 MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 
-WORKDIR /build
+WORKDIR /app
+
+RUN mkdir /build
 COPY . .
 
 RUN apk add pkgconfig curl gcc vips-dev libc-dev
@@ -9,12 +11,7 @@ RUN apk add pkgconfig curl gcc vips-dev libc-dev
 RUN go mod download
 RUN go build -o smasher ./web
 
-FROM alpine:latest
-MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
-
-WORKDIR /app
-
-COPY --from=builder /build/smasher .
+COPY /build/smasher .
 RUN ln -s /home/container/cache /app/cache
 RUN ln -s /home/container/ui /app/ui
 RUN ln -s /home/container/.env /app/.env
