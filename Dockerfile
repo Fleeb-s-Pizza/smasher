@@ -4,7 +4,7 @@ MAINTAINER Vladimir Urik, <gggedrvideos@gmail.com>
 WORKDIR /app
 
 RUN mkdir /build
-COPY . /build
+COPY . /build/
 RUN cd /build
 
 RUN apk add pkgconfig curl gcc vips-dev libc-dev
