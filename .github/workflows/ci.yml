@@ -17,6 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: docker/setup-qemu-action@v2
+      - name: "Write build info"
+        uses: "DamianReeves/write-file-action@master"
+        with:
+          path: build.json
+          write-mode: overwrite
+          contents: |
+            {
+              "build": "${{ github.run_number }}",
+              "commit": "${{ github.sha }}",
+              "branch": "${{ github.ref_name }}",
+              "environment": "${{ github.ref_name == 'master' && 'production' || 'development' }}",
+              "url": "${{ github.ref_name == 'master' && 'https://smasher.fleebs.gg/' || 'https://dev.smasher.fleebs.gg/' }}"
+            }
       - uses: docker/setup-buildx-action@v2
         with:
           version: "v0.8.2"

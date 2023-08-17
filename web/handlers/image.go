@@ -1,8 +1,9 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/Fleeb-s-Pizza/smasher/web/utils"
 	"github.com/h2non/bimg"
 	"net/http"
 	"os"
@@ -33,7 +34,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	url := r.URL.Query().Get("url")
-	if !CheckIfStringUrl(url) {
+	if !utils.CheckIfStringUrl(url) {
 		errorJson, _ := json.Marshal(Error{
 			Message: "Invalid url parameter",
 			Status:  http.StatusBadRequest,
@@ -105,12 +106,12 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// url to md5
-	hashedUrl := HashUrl(url) + "-" + strconv.Itoa(width) + "-" + strconv.Itoa(height) + "-" + strconv.FormatBool(webp) + "-" + strconv.Itoa(quality)
-	zeroHashedUrl := HashUrl(url) + "-0-0-" + strconv.FormatBool(webp) + "-" + strconv.Itoa(quality)
-	domain := ExtractDomainFromUrl(url)
+	hashedUrl := utils.HashUrl(url) + "-" + strconv.Itoa(width) + "-" + strconv.Itoa(height) + "-" + strconv.FormatBool(webp) + "-" + strconv.Itoa(quality)
+	zeroHashedUrl := utils.HashUrl(url) + "-0-0-" + strconv.FormatBool(webp) + "-" + strconv.Itoa(quality)
+	domain := utils.ExtractDomainFromUrl(url)
 
 	// create folder
-	err = CreateFolder("image", domain)
+	err = utils.CreateFolder("image", domain)
 	if err != nil {
 		errorJson, _ := json.Marshal(Error{
 			Message: "Error creating folder",
@@ -122,8 +123,8 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if file exist
-	if !CheckIfFileExist("image", domain, zeroHashedUrl) {
-		err := DownloadFile("image", domain, zeroHashedUrl, url)
+	if !utils.CheckIfFileExist("image", domain, zeroHashedUrl) {
+		err := utils.DownloadFile("image", domain, zeroHashedUrl, url)
 		if err != nil {
 			errorJson, _ := json.Marshal(Error{
 				Message: "Error downloading file",
@@ -136,7 +137,7 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	buffer, err := os.ReadFile(GetFilePath("image", domain, hashedUrl))
+	buffer, err := os.ReadFile(utils.GetFilePath("image", domain, hashedUrl))
 	if err != nil {
 		panic(err)
 		return
@@ -193,12 +194,12 @@ func HandleImageRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = os.WriteFile(GetFilePath("image", domain, hashedUrl), processed, 0644)
+	err = os.WriteFile(utils.GetFilePath("image", domain, hashedUrl), processed, 0644)
 	if err != nil {
 		panic(err)
 		return
 	}
 
-	http.ServeFile(w, r, GetFilePath("image", domain, hashedUrl))
-	err = os.Chtimes(GetFilePath("image", domain, hashedUrl), time.Now(), time.Now())
+	http.ServeFile(w, r, utils.GetFilePath("image", domain, hashedUrl))
+	err = os.Chtimes(utils.GetFilePath("image", domain, hashedUrl), time.Now(), time.Now())
 }
